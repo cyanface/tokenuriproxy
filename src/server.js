@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3001;
 
 const client = createClient("redis://redis:6379");
 client.on("error", (err) => console.log("Redis Client Error", err));
-await client.connect();
+client.connect();
 
 app.use(express.json());
 
