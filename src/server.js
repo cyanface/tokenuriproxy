@@ -43,7 +43,7 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
     let result = null;
 
     const rediskey = web3.utils.keccak256(chain_id + contractAddress + tokenId);
-    //result = await client.get(rediskey);
+    result = await client.get(rediskey);
     if (!result) {
       console.log("cache miss");
       const contract = new web3.eth.Contract(erc721abi, contractAddress);
