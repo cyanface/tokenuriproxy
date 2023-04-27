@@ -43,11 +43,17 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
     let result = null;
 
     const rediskey = web3.utils.keccak256(chain_id + contractAddress + tokenId);
-    result = await client.get(rediskey);
+    //result = await client.get(rediskey);
     if (!result) {
       console.log("cache miss");
       const contract = new web3.eth.Contract(erc721abi, contractAddress);
-      const tokenURI = await contract.methods.tokenURI(tokenId).call();
+      let tokenURI = await contract.methods.tokenURI(tokenId).call();
+
+      if (tokenURI.substring(0, 28) == "data:application/json;base64") {
+        const data = tokenURI.substring(29);
+        let buff = Buffer.from(data, "base64");
+        tokenURI = JSON.parse(buff.toString("ascii"));
+      }
 
       if (isJson(tokenURI)) {
         result = tokenURI;
