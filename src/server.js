@@ -123,8 +123,10 @@ app.get("/mopntestnfts/:chain_id/:contractAddress/:tokenId", async (req, res) =>
     return res.status(400).json({ error: "Invalid test nft metadata" });
   }
 
+  const config = configs["testnftmetadata"][chain_id][contractAddress];
+
   try {
-    let result = configs["testnftmetadata"][chain_id][contractAddress];
+    let result = config;
     result.name += " #" + tokenId;
     result.image += web3.utils.padLeft(tokenId, 5) + ".png";
 
