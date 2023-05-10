@@ -57,14 +57,7 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
       }
 
       if (tokenURI.substring(0, 28) == "data:application/json;base64") {
-        const data = tokenURI.substring(29);
-        let buff = Buffer.from(data, "base64");
-        tokenURI = JSON.parse(buff.toString("ascii"));
-      }
-
-      if (isJson(tokenURI)) {
         result = tokenURI;
-        console.log("dynamic nft");
       } else {
         const urldata = new URL(tokenURI);
         if (urldata.protocol == "ipfs:") {
@@ -74,7 +67,7 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
           };
 
           const data = await axios.request(options);
-          result = data.data;
+          result = JSON.stringify(data.data);
           console.log("ipfs", tokenURI);
         } else if (urldata.protocol == "http:" || urldata.protocol == "https:") {
           const options = {
@@ -83,19 +76,18 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
           };
 
           const data = await axios.request(options);
-          result = data.data;
+          result = JSON.stringify(data.data);
           console.log("http", tokenURI);
         }
       }
 
-      await client.set(rediskey, JSON.stringify(result), { EX: 3600 });
+      await client.set(rediskey, result, { EX: 3600 });
       console.log("set cache");
     } else {
       console.log("cache hit");
-      result = JSON.parse(result);
     }
 
-    res.status(200).json(result);
+    res.status(200).send(result);
     console.log("done");
   } catch (error) {
     console.log(error);
