@@ -126,7 +126,7 @@ app.get("/mopntestnfts/:chain_id/:contractAddress/:tokenId", async (req, res) =>
   const config = configs["testnftmetadata"][chain_id][contractAddress];
 
   try {
-    const result = config;
+    const result = Object.assign({}, config);
     result.name += " #" + tokenId;
     result.image += web3.utils.padLeft(tokenId, 5) + ".png";
 
