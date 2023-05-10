@@ -98,6 +98,44 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
   }
 });
 
+app.get("/mopntestnfts/:chain_id/:contractAddress/:tokenId", async (req, res) => {
+  const web3 = new Web3();
+  const { chain_id, contractAddress, tokenId } = req.params;
+
+  // 验证chain_id是否为有效的整数
+  if (!validator.isInt(chain_id)) {
+    return res.status(400).json({ error: "Invalid chain_id" });
+  }
+
+  if (!configs["testnftmetadata"][chain_id]) {
+    return res.status(400).json({ error: "Invalid chain_id" });
+  }
+
+  if (!isValidEthereumAddress(contractAddress)) {
+    return res.status(400).json({ error: "Invalid contractAddress" });
+  }
+
+  if (!validator.isInt(tokenId)) {
+    return res.status(400).json({ error: "Invalid tokenId" });
+  }
+
+  if (!configs["testnftmetadata"][chain_id][contractAddress]) {
+    return res.status(400).json({ error: "Invalid test nft metadata" });
+  }
+
+  try {
+    let result = configs["testnftmetadata"][chain_id][contractAddress];
+    result.name += " #" + tokenId;
+    result.image += web3.utils.padLeft(tokenId, 5) + ".png";
+
+    res.status(200).send(result);
+    console.log("done");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 client.connect().then(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
