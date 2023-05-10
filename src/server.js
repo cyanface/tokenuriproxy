@@ -46,8 +46,15 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
     result = await client.get(rediskey);
     if (!result) {
       console.log("cache miss");
-      const contract = new web3.eth.Contract(erc721abi, contractAddress);
-      let tokenURI = await contract.methods.tokenURI(tokenId).call();
+      let tokenURI;
+      if (contractAddress == "0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85") {
+        tokenURI =
+          "https://metadata.ens.domains/mainnet/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/" +
+          tokenId;
+      } else {
+        const contract = new web3.eth.Contract(erc721abi, contractAddress);
+        tokenURI = await contract.methods.tokenURI(tokenId).call();
+      }
 
       if (tokenURI.substring(0, 28) == "data:application/json;base64") {
         const data = tokenURI.substring(29);
