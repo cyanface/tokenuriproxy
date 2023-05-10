@@ -73,6 +73,9 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
           const options = {
             method: "GET",
             url: tokenURI,
+            validateStatus: function (status) {
+              return status < 500; // Resolve only if the status code is less than 500
+            },
           };
 
           const data = await axios.request(options);
