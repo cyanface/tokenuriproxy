@@ -93,13 +93,7 @@ app.get("/:chain_id/:contractAddress/:tokenId", async (req, res) => {
     res.status(200).send(result);
     console.log("done");
   } catch (error) {
-    console.log(
-      "error",
-      error.code,
-      error.message,
-      error.response.status,
-      error.response.statusText
-    );
+    console.log("error", error.code, error.message);
     res.status(500).json({ error: error.message });
   }
 });
